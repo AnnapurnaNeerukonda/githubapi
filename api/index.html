@@ -103,6 +103,10 @@
 
                 const updatedAt = new Date(data[i].updated_at);
                 updatedAtCell.textContent = updatedAt.toLocaleString();
+                const daysSinceLastCommit = Math.ceil((currentDate - updatedAt) / (1000 * 60 * 60 * 24));
+                daysSinceLastCommitCell.textContent = daysSinceLastCommit;
+
+
 
             }
         }
