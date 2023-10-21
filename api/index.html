@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+    <style>
+        .search {
+            display: flex;
+            justify-content: center;
+        }
+        .search input{
+            border:1px solid black;
+            width: 500px; 
+            border-radius:25px ;
+        }
+        .btn{
+            border-radius:25px ;width:70px;
+            border:1px solid black
+        }
+        .narrow-table{
+            width: 70%;
+        }
+        table,
+        td,
+        th {
+            border: 1px solid #ddd;
+            text-align: left;
+        }
+        th,
+        td {
+            padding: 15px;
+        }
+        
+    </style>
+</head>
+
+<body>
+    <div class="search">
+        <img src="github.png" alt="github image" width="100px">
+        <input type="text" placeholder="Enter your github username " id="search-url">
+        <button onclick="search()" class="btn">submit</button><br><br>
+    </div>
+    <br><br>
+
+        <table align="center" class="table table-light table-striped table-hover narrow-table" id="result-table">
+            <tr scope="row">
+                <th scope="col">S.No</th>
+                <th scope="col">Name</th>
+                <th scope="col">Created At</th>
+                <th scope="col">Updated At</th>
+                <th scope="col">Days since last commit</th>
+            </tr>
+        </table>
+        <div id="repo-info"></div>
+        <a href="#" onclick="showRepoInfo(data[i]);"></a>
+
+    <script>
+        function search() {
+            var searchRepoUrl = document.getElementById("search-url").value
+          const api = `https://api.github.com/users/${searchRepoUrl}/repos`
+            fetch(`${api}`)
+                .then((res) => {
+                    return res.json()
+                })
+                .then((res) => {
+                    console.log(res)
+                    resultTable(res)
+                })
+        }
+        function resultTable(data) {
+            const table = document.getElementById("result-table");
+
+            table.innerHTML = "";
+            const headingRow = table.insertRow();
+            const headings = ["S.No", "Name", "Created At", "Updated At", "Days since last commit"];
+            const currentDate = new Date();
+            for (let i = 0; i < headings.length; i++) {
+                const headingCell = headingRow.insertCell(i);
+                headingCell.textContent = headings[i];
+            }
+            for (let i = 0; i < data.length; i++) {
+                const row = table.insertRow();
+
+                const indexCell = row.insertCell(0);
+                const nameCell = row.insertCell(1);
+                const createdAtCell = row.insertCell(2);
+                const updatedAtCell = row.insertCell(3);
+                const daysSinceLastCommitCell = row.insertCell(4);
+                indexCell.textContent = i + 1;
+                const repoLink = document.createElement('a');
+                repoLink.href = "#";
+                repoLink.textContent = data[i].name;
+                repoLink.onclick = function () {
+                    showRepoInfo(data[i]);
+                };
+                nameCell.appendChild(repoLink);
+                const createdAt = new Date(data[i].created_at);
+                createdAtCell.textContent = createdAt.toLocaleString();
+
+                const updatedAt = new Date(data[i].updated_at);
+                updatedAtCell.textContent = updatedAt.toLocaleString();
+
+            }
+        }
+        
+          
+    </script>
+</body>
+
+</html>
