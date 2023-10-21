@@ -110,7 +110,20 @@
 
             }
         }
-        
+        function showRepoInfo(repo) {
+            alert("Watch at the end of the table")
+            const repoInfoContent = `
+                <h3>Repository Information</h3>
+                <p>Name of the repository: ${repo.name}</p>
+                <p>Type: ${repo.private ? 'Private' : 'Public'}</p>
+                <p>Forks: ${repo.forks}</p>
+                <p>Open issues: ${repo.open_issues}</p>
+                <p>Language used : ${repo.language}</p>
+                <p>Has issues :${repo.has_issues}</p>
+         
+            `;  document.getElementById("repo-info").innerHTML = repoInfoContent;
+         }
+
           
     </script>
 </body>
