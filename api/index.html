@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
     <style>
@@ -55,21 +57,28 @@
                 <th scope="col">Days since last commit</th>
             </tr>
         </table>
-        <div id="repo-info"></div>
-        <a href="#" onclick="showRepoInfo(data[i]);"></a>
-
+        <div class="modal" id="repoModal">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h4 class="modal-title">Repository Information</h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body" id="repoModalContent">
+                    </div>
+                </div>
+            </div>
+        </div>
     <script>
+       
         function search() {
             var searchRepoUrl = document.getElementById("search-url").value
           const api = `https://api.github.com/users/${searchRepoUrl}/repos`
-            fetch(`${api}`)
+          fetch(api)
+                .then((res) => res.json())
                 .then((res) => {
-                    return res.json()
-                })
-                .then((res) => {
-                    console.log(res)
-                    resultTable(res)
-                })
+                    resultTable(res);
+                });
         }
         function resultTable(data) {
             const table = document.getElementById("result-table");
@@ -110,21 +119,31 @@
 
             }
         }
-        function showRepoInfo(repo) {
-            alert("Watch at the end of the table")
-            const repoInfoContent = `
-                <h3>Repository Information</h3>
+            function showRepoInfo(repo) {
+                const repoInfoContent = ` <h3>Repository Information</h3>
                 <p>Name of the repository: ${repo.name}</p>
                 <p>Type: ${repo.private ? 'Private' : 'Public'}</p>
                 <p>Forks: ${repo.forks}</p>
                 <p>Open issues: ${repo.open_issues}</p>
                 <p>Language used : ${repo.language}</p>
                 <p>Has issues :${repo.has_issues}</p>
-         
-            `;  document.getElementById("repo-info").innerHTML = repoInfoContent;
-         }
+            `;
 
-          
+            document.getElementById("repoModalContent").innerHTML = repoInfoContent;
+
+            const commitsApi = `https://api.github.com/repos/${repo.owner.login}/${repo.name}/commits`;
+            fetch(commitsApi)
+                .then(response => response.json())
+                .then(commits => {
+                    const numCommits = commits.length;
+                    const commitsInfo = `<p>Commits: ${numCommits}</p>`;
+                    document.getElementById("repoModalContent").insertAdjacentHTML('beforeend', commitsInfo);
+                })
+                .catch(error => console.error('Error fetching commits:', error));
+
+            $('#repoModal').modal('show');
+        }
+        
     </script>
 </body>
 
